@@ -13,8 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Stacy Strategies",
-  description: "Stacy Strategies — powered by Next.js + Supabase",
+  title: "2026 Midterm Election Risk Assessment | Stacy Strategies",
+  description:
+    "Top 10 ways Trump could influence or contest the 2026 midterm elections — a comprehensive risk assessment with evidence and organizations fighting back.",
 };
 
 export default function RootLayout({
