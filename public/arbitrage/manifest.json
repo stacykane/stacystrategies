@@ -1,0 +1,24 @@
+{
+  "name": "Arbitrage",
+  "short_name": "Arbitrage",
+  "description": "Snap a photo, get instant resale prices",
+  "start_url": "/arbitrage",
+  "display": "standalone",
+  "background_color": "#fafaf9",
+  "theme_color": "#16a34a",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/arbitrage/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/arbitrage/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
