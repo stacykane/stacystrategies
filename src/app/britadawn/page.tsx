@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 const testimonials = [
   {
@@ -42,23 +42,91 @@ const testimonials = [
 ];
 
 const writings = [
-  { title: "To Rage or not to Rage", topic: "Anger as intelligent energy" },
-  { title: "How do I End Well?", topic: "Graceful transitions" },
-  { title: "I am. I can. I will. I do.", topic: "A framework for change" },
+  {
+    title: "To Rage or not to Rage",
+    topic: "Anger as intelligent energy",
+    url: "https://www.britadawn.com/writing/to-rage-or-not-to-rage",
+  },
+  {
+    title: "How do I End Well?",
+    topic: "Graceful transitions",
+    url: "https://www.britadawn.com/writing/how-do-i-end-well",
+  },
+  {
+    title: "I am. I can. I will. I do.",
+    topic: "A framework for change",
+    url: "https://www.britadawn.com/writing/i-am-i-can-i-will-i-do",
+  },
   {
     title: "All the Answers are in Your Body",
     topic: "Somatic awareness",
+    url: "https://www.britadawn.com/writing/all-the-answers-are-in-your-body",
   },
-  { title: "The Art of Taking Your Time", topic: "Intentional pacing" },
+  {
+    title: "The Art of Taking Your Time",
+    topic: "Intentional pacing",
+    url: "https://www.britadawn.com/writing/the-art-of-taking-your-time",
+  },
   {
     title: "What does it Mean to Trust Yourself?",
     topic: "Self-trust",
+    url: "https://www.britadawn.com/writing/what-does-it-mean-to-trust-yourself",
   },
 ];
 
+function BodyWisdomIcon() {
+  return (
+    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="24" cy="12" r="5" stroke="#A99BB5" strokeWidth="1.5" fill="none" />
+      <path d="M24 18v8M20 36l4-10 4 10M16 28h16" stroke="#A99BB5" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M12 20c-2 2-3 5-3 8s1 6 3 8M36 20c2 2 3 5 3 8s-1 6-3 8" stroke="#A99BB5" strokeWidth="1" strokeLinecap="round" opacity="0.5" />
+    </svg>
+  );
+}
+
+function SelfTrustIcon() {
+  return (
+    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M24 8C20 12 12 16 12 24c0 7 5.5 13 12 16 6.5-3 12-9 12-16 0-8-8-12-12-16z" stroke="#A99BB5" strokeWidth="1.5" fill="none" />
+      <circle cx="24" cy="24" r="4" stroke="#A99BB5" strokeWidth="1.5" fill="none" />
+      <path d="M24 20v-3M24 31v-3" stroke="#A99BB5" strokeWidth="1" strokeLinecap="round" opacity="0.5" />
+    </svg>
+  );
+}
+
+function CourageIcon() {
+  return (
+    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M8 38c4-8 10-14 16-28 6 14 12 20 16 28" stroke="#A99BB5" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+      <path d="M14 32h20" stroke="#A99BB5" strokeWidth="1" strokeLinecap="round" opacity="0.5" />
+      <circle cx="24" cy="22" r="3" stroke="#A99BB5" strokeWidth="1.5" fill="none" />
+    </svg>
+  );
+}
+
 export default function BritaDawnPage() {
   const [activeTestimonial, setActiveTestimonial] = useState(0);
+  const [testimonialFading, setTestimonialFading] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const goToTestimonial = useCallback(
+    (index: number) => {
+      if (index === activeTestimonial) return;
+      setTestimonialFading(true);
+      setTimeout(() => {
+        setActiveTestimonial(index);
+        setTestimonialFading(false);
+      }, 400);
+    },
+    [activeTestimonial]
+  );
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      goToTestimonial((activeTestimonial + 1) % testimonials.length);
+    }, 6000);
+    return () => clearInterval(interval);
+  }, [activeTestimonial, goToTestimonial]);
 
   return (
     <div className="bd-page">
@@ -110,8 +178,8 @@ export default function BritaDawnPage() {
 
         .bd-nav-logo {
           font-family: 'Cormorant Garamond', serif;
-          font-size: 1.5rem;
-          font-weight: 400;
+          font-size: 2rem;
+          font-weight: 500;
           letter-spacing: 0.04em;
           color: var(--bd-dark);
           text-decoration: none;
@@ -215,16 +283,21 @@ export default function BritaDawnPage() {
           text-align: center;
           padding: 8rem 2rem 6rem;
           position: relative;
-          background: linear-gradient(
-            180deg,
-            var(--bd-cream) 0%,
-            var(--bd-warm) 100%
-          );
+          background-image:
+            linear-gradient(
+              180deg,
+              rgba(250, 247, 242, 0.55) 0%,
+              rgba(243, 237, 228, 0.6) 40%,
+              rgba(243, 237, 228, 0.75) 100%
+            ),
+            url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1920&q=80&auto=format');
+          background-size: cover;
+          background-position: center 40%;
         }
 
         .bd-hero-tagline {
-          font-family: 'Inter', sans-serif;
-          font-size: 0.85rem;
+          font-family: 'Cormorant Garamond', serif;
+          font-size: 1.1rem;
           font-weight: 500;
           letter-spacing: 0.25em;
           text-transform: uppercase;
@@ -250,11 +323,11 @@ export default function BritaDawnPage() {
         }
 
         .bd-hero-sub {
-          font-size: 1.2rem;
+          font-size: 1.25rem;
           line-height: 1.7;
-          color: var(--bd-earth);
+          color: var(--bd-deep);
           max-width: 520px;
-          font-weight: 300;
+          font-weight: 400;
           margin-bottom: 3rem;
         }
 
@@ -327,7 +400,7 @@ export default function BritaDawnPage() {
         }
 
         .bd-section-label {
-          font-size: 0.8rem;
+          font-size: 0.85rem;
           font-weight: 500;
           letter-spacing: 0.2em;
           text-transform: uppercase;
@@ -391,6 +464,10 @@ export default function BritaDawnPage() {
           background: var(--bd-warm);
         }
 
+        .bd-approach .bd-section-heading {
+          font-size: clamp(2.5rem, 5vw, 3.8rem);
+        }
+
         .bd-pillars {
           display: grid;
           grid-template-columns: repeat(3, 1fr);
@@ -410,6 +487,7 @@ export default function BritaDawnPage() {
           background: var(--bd-white);
           border: 1px solid var(--bd-sand);
           transition: transform 0.3s ease, box-shadow 0.3s ease;
+          text-align: center;
         }
 
         .bd-pillar:hover {
@@ -417,25 +495,22 @@ export default function BritaDawnPage() {
           box-shadow: 0 12px 40px rgba(44, 36, 24, 0.08);
         }
 
-        .bd-pillar-number {
-          font-family: 'Cormorant Garamond', serif;
-          font-size: 2.5rem;
-          font-weight: 300;
-          color: var(--bd-accent-light);
-          margin-bottom: 1rem;
-          line-height: 1;
+        .bd-pillar-icon {
+          display: flex;
+          justify-content: center;
+          margin-bottom: 1.25rem;
         }
 
         .bd-pillar h3 {
           font-family: 'Cormorant Garamond', serif;
-          font-size: 1.5rem;
+          font-size: 1.6rem;
           font-weight: 500;
           color: var(--bd-dark);
           margin-bottom: 1rem;
         }
 
         .bd-pillar p {
-          font-size: 1rem;
+          font-size: 1.05rem;
           line-height: 1.75;
           color: var(--bd-earth);
           font-weight: 300;
@@ -456,6 +531,24 @@ export default function BritaDawnPage() {
           color: var(--bd-cream);
         }
 
+        .bd-testimonial-wrap {
+          margin-top: 3rem;
+          min-height: 200px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .bd-testimonial-content {
+          opacity: 1;
+          transition: opacity 0.4s ease;
+        }
+
+        .bd-testimonial-content.fading {
+          opacity: 0;
+        }
+
         .bd-testimonial-quote {
           font-family: 'Cormorant Garamond', serif;
           font-size: clamp(1.4rem, 3vw, 1.9rem);
@@ -465,8 +558,6 @@ export default function BritaDawnPage() {
           max-width: 750px;
           margin: 0 auto 2rem;
           color: var(--bd-sand);
-          min-height: 120px;
-          transition: opacity 0.4s ease;
         }
 
         .bd-testimonial-author {
@@ -518,15 +609,19 @@ export default function BritaDawnPage() {
         }
 
         .bd-writing-card {
+          display: block;
           padding: 2rem;
           border: 1px solid var(--bd-sand);
           transition: all 0.3s ease;
-          cursor: default;
+          cursor: pointer;
+          text-decoration: none;
         }
 
         .bd-writing-card:hover {
           border-color: var(--bd-accent-light);
           background: var(--bd-cream);
+          transform: translateY(-2px);
+          box-shadow: 0 8px 24px rgba(44, 36, 24, 0.06);
         }
 
         .bd-writing-card h3 {
@@ -543,58 +638,18 @@ export default function BritaDawnPage() {
           font-weight: 300;
         }
 
-        /* Details / Working Together */
-        .bd-details {
-          background: var(--bd-warm);
-        }
-
-        .bd-details-grid {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 4rem;
-          margin-top: 3rem;
-        }
-
-        @media (max-width: 768px) {
-          .bd-details-grid {
-            grid-template-columns: 1fr;
-            gap: 2.5rem;
-          }
-        }
-
-        .bd-detail-item {
-          display: flex;
-          gap: 1.25rem;
-          align-items: flex-start;
-        }
-
-        .bd-detail-icon {
-          width: 48px;
-          height: 48px;
-          min-width: 48px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          background: var(--bd-white);
-          border: 1px solid var(--bd-sand);
-          font-family: 'Cormorant Garamond', serif;
-          font-size: 1.3rem;
+        .bd-writing-card .bd-read-arrow {
+          display: inline-block;
+          margin-top: 0.75rem;
+          font-size: 0.85rem;
           color: var(--bd-accent);
+          font-weight: 400;
+          letter-spacing: 0.05em;
+          transition: transform 0.3s ease;
         }
 
-        .bd-detail-item h3 {
-          font-family: 'Cormorant Garamond', serif;
-          font-size: 1.3rem;
-          font-weight: 500;
-          color: var(--bd-dark);
-          margin-bottom: 0.4rem;
-        }
-
-        .bd-detail-item p {
-          font-size: 1rem;
-          line-height: 1.65;
-          color: var(--bd-earth);
-          font-weight: 300;
+        .bd-writing-card:hover .bd-read-arrow {
+          transform: translateX(4px);
         }
 
         /* CTA */
@@ -673,7 +728,7 @@ export default function BritaDawnPage() {
       {/* Navigation */}
       <nav className="bd-nav">
         <a href="#top" className="bd-nav-logo">
-          Brita Dawn
+          Brita Dawn Coaching
         </a>
         <ul className="bd-nav-links">
           <li>
@@ -740,8 +795,9 @@ export default function BritaDawnPage() {
           Live Your Life from <em>Freedom</em>.
         </h1>
         <p className="bd-hero-sub">
-          Everything you need is not outside. It&apos;s inside of you. Coaching
-          for people ready to come alive.
+          Everything you need is inside of you.
+          <br />
+          Coaching for people ready to come alive.
         </p>
         <a href="#connect" className="bd-btn">
           Begin the Conversation
@@ -782,7 +838,7 @@ export default function BritaDawnPage() {
             <div className="bd-about-aside">
               <p>
                 &ldquo;Your sweet spot lives between leaning into the edges of
-                what you think is possible, and riding a pace that is sustainable
+                what you think is possible, and finding a pace that is sustainable
                 and enjoyable.&rdquo;
               </p>
             </div>
@@ -795,11 +851,13 @@ export default function BritaDawnPage() {
         <div className="bd-section-inner">
           <p className="bd-section-label">The Approach</p>
           <h2 className="bd-section-heading">
-            I am. I can. I will. I do.
+            How we work together
           </h2>
           <div className="bd-pillars">
             <div className="bd-pillar">
-              <div className="bd-pillar-number">01</div>
+              <div className="bd-pillar-icon">
+                <BodyWisdomIcon />
+              </div>
               <h3>Body Wisdom</h3>
               <p>
                 All the answers are in your body. Through somatic awareness, we
@@ -809,7 +867,9 @@ export default function BritaDawnPage() {
               </p>
             </div>
             <div className="bd-pillar">
-              <div className="bd-pillar-number">02</div>
+              <div className="bd-pillar-icon">
+                <SelfTrustIcon />
+              </div>
               <h3>Self-Trust</h3>
               <p>
                 We unwind the limiting beliefs and external pressures that keep
@@ -818,7 +878,9 @@ export default function BritaDawnPage() {
               </p>
             </div>
             <div className="bd-pillar">
-              <div className="bd-pillar-number">03</div>
+              <div className="bd-pillar-icon">
+                <CourageIcon />
+              </div>
               <h3>Courageous Action</h3>
               <p>
                 Freedom doesn&apos;t come from thinking differently. It comes
@@ -837,14 +899,20 @@ export default function BritaDawnPage() {
           <h2 className="bd-section-heading">
             What happens when you trust the process
           </h2>
-          <div style={{ marginTop: "3rem" }}>
-            <p className="bd-testimonial-quote">
-              &ldquo;{testimonials[activeTestimonial].quote}&rdquo;
-            </p>
-            <p className="bd-testimonial-author">
-              {testimonials[activeTestimonial].name} &mdash;{" "}
-              {testimonials[activeTestimonial].location}
-            </p>
+          <div className="bd-testimonial-wrap">
+            <div
+              className={`bd-testimonial-content ${
+                testimonialFading ? "fading" : ""
+              }`}
+            >
+              <p className="bd-testimonial-quote">
+                &ldquo;{testimonials[activeTestimonial].quote}&rdquo;
+              </p>
+              <p className="bd-testimonial-author">
+                {testimonials[activeTestimonial].name} &mdash;{" "}
+                {testimonials[activeTestimonial].location}
+              </p>
+            </div>
             <div className="bd-testimonial-dots">
               {testimonials.map((_, i) => (
                 <button
@@ -852,7 +920,7 @@ export default function BritaDawnPage() {
                   className={`bd-testimonial-dot ${
                     i === activeTestimonial ? "active" : ""
                   }`}
-                  onClick={() => setActiveTestimonial(i)}
+                  onClick={() => goToTestimonial(i)}
                   aria-label={`Testimonial ${i + 1}`}
                 />
               ))}
@@ -868,62 +936,18 @@ export default function BritaDawnPage() {
           <h2 className="bd-section-heading">Reflections on living fully</h2>
           <div className="bd-writing-grid">
             {writings.map((w, i) => (
-              <div className="bd-writing-card" key={i}>
+              <a
+                className="bd-writing-card"
+                key={i}
+                href={w.url}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <h3>{w.title}</h3>
                 <p>{w.topic}</p>
-              </div>
+                <span className="bd-read-arrow">Read &rarr;</span>
+              </a>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Working Together */}
-      <section className="bd-section bd-details" id="details">
-        <div className="bd-section-inner">
-          <p className="bd-section-label">Working Together</p>
-          <h2 className="bd-section-heading">What to expect</h2>
-          <div className="bd-details-grid">
-            <div className="bd-detail-item">
-              <div className="bd-detail-icon">&infin;</div>
-              <div>
-                <h3>Commitment</h3>
-                <p>
-                  A minimum 6-month partnership, because real transformation
-                  takes time and trust. We go deep, not fast.
-                </p>
-              </div>
-            </div>
-            <div className="bd-detail-item">
-              <div className="bd-detail-icon">&loz;</div>
-              <div>
-                <h3>Sessions</h3>
-                <p>
-                  Weekly or biweekly sessions via phone or Zoom on Tuesdays,
-                  Wednesdays, or Fridays. $225 per session.
-                </p>
-              </div>
-            </div>
-            <div className="bd-detail-item">
-              <div className="bd-detail-icon">&sim;</div>
-              <div>
-                <h3>Your Pace</h3>
-                <p>
-                  Whether you need to lean into edges or slow down and listen,
-                  we find the rhythm that serves your growth.
-                </p>
-              </div>
-            </div>
-            <div className="bd-detail-item">
-              <div className="bd-detail-icon">&bull;</div>
-              <div>
-                <h3>Outcomes</h3>
-                <p>
-                  Alignment with your core values, confidence in
-                  decision-making, sustainable goals, and the capacity for brave
-                  new chapters.
-                </p>
-              </div>
-            </div>
           </div>
         </div>
       </section>
@@ -934,7 +958,7 @@ export default function BritaDawnPage() {
           <div className="bd-divider" />
           <p className="bd-section-label">Take the First Step</p>
           <h2 className="bd-section-heading">
-            Your freedom is everyone&apos;s freedom
+            More freedom is within reach
           </h2>
           <p>
             Start with a free 30-minute consultation. No pressure, no
@@ -956,20 +980,26 @@ export default function BritaDawnPage() {
         <p>Certified Coach Since 2013</p>
         <div className="bd-footer-links">
           <a
-            href="https://www.facebook.com"
+            href="https://www.facebook.com/Brita-Dawn-Coaching-556637824370248/"
             target="_blank"
             rel="noopener noreferrer"
           >
             Facebook
           </a>
           <a
-            href="https://www.linkedin.com"
+            href="https://www.linkedin.com/in/britadawn"
             target="_blank"
             rel="noopener noreferrer"
           >
             LinkedIn
           </a>
-          <a href="mailto:brita@britadawn.com">Contact</a>
+          <a
+            href="https://www.britadawn.com/contact"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Contact
+          </a>
         </div>
       </footer>
     </div>
