@@ -72,7 +72,6 @@ export default function CameraInput({ onCapture }: CameraInputProps) {
         ref={cameraRef}
         type="file"
         accept="image/*"
-        capture="environment"
         onChange={handleFile}
         className="hidden"
       />
