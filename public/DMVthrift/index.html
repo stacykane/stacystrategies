@@ -1,0 +1,1741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DC Metro Thrift & Resale Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&family=Permanent+Marker&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #f5efe4;
+    background-image:
+      repeating-linear-gradient(45deg, transparent, transparent 20px, rgba(180,160,130,.08) 20px, rgba(180,160,130,.08) 21px),
+      repeating-linear-gradient(-45deg, transparent, transparent 20px, rgba(180,160,130,.08) 20px, rgba(180,160,130,.08) 21px);
+    min-height: 100vh;
+    padding: 24px 16px 60px;
+    color: #1a1a1a;
+  }
+
+  /* HEADER */
+  .hdr { text-align: center; margin-bottom: 20px; }
+  .hdr h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(30px, 6vw, 54px);
+    letter-spacing: 3px;
+    line-height: 1;
+  }
+  .hdr .sub {
+    font-family: 'Permanent Marker', cursive;
+    font-size: 13px;
+    color: #c0392b;
+    margin-top: 4px;
+    letter-spacing: 1px;
+  }
+  .hdr .badge {
+    display: inline-block;
+    background: #1a1a1a;
+    color: #f5efe4;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: 2px;
+    margin-top: 10px;
+  }
+
+  /* FILTER BAR */
+  .filter-bar {
+    max-width: 960px;
+    margin: 0 auto 24px;
+    background: #fff;
+    border-radius: 12px;
+    padding: 16px 18px;
+    box-shadow: 0 2px 12px rgba(0,0,0,.08);
+  }
+  .filter-section { margin-bottom: 14px; }
+  .filter-section:last-child { margin-bottom: 0; }
+  .filter-label {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 12px;
+    letter-spacing: 2px;
+    color: #999;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .filter-label .icon { font-size: 14px; }
+  .filter-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .pill {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 2px solid #e0dcd5;
+    background: #faf8f4;
+    color: #666;
+    cursor: pointer;
+    transition: all .15s ease;
+    white-space: nowrap;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+  .pill:hover { border-color: #ccc; background: #f0ede6; }
+  .pill.active { border-color: #1a1a1a; background: #1a1a1a; color: #f5efe4; }
+  .pill.active-red { border-color: #c0392b; background: #c0392b; color: #fff; }
+  .pill.active-orange { border-color: #e67e22; background: #e67e22; color: #fff; }
+  .pill.active-purple { border-color: #8e44ad; background: #8e44ad; color: #fff; }
+  .pill.active-blue { border-color: #2980b9; background: #2980b9; color: #fff; }
+  .pill.active-green { border-color: #27ae60; background: #27ae60; color: #fff; }
+
+  .filter-count {
+    text-align: center;
+    max-width: 960px;
+    margin: -12px auto 18px;
+    font-size: 12px;
+    color: #999;
+    font-weight: 500;
+  }
+  .filter-count strong { color: #1a1a1a; }
+  .clear-filters {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: #c0392b;
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin-left: 8px;
+    text-decoration: underline;
+    display: none;
+  }
+  .clear-filters.show { display: inline; }
+
+  /* CATEGORY BANNER */
+  .cat-banner {
+    max-width: 960px;
+    margin: 32px auto 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .cat-banner.hidden { display: none; }
+  .cat-banner hr { flex: 1; border: none; border-top: 2px solid; }
+  .cat-label {
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 2.5px;
+    font-size: 14px;
+    white-space: nowrap;
+    padding: 5px 15px;
+    border-radius: 3px;
+  }
+  .c1 hr { border-color: #c0392b; } .c1 .cat-label { background: #c0392b; color: #fff; }
+  .c2 hr { border-color: #e67e22; } .c2 .cat-label { background: #e67e22; color: #fff; }
+  .c3 hr { border-color: #8e44ad; } .c3 .cat-label { background: #8e44ad; color: #fff; }
+  .c4 hr { border-color: #2980b9; } .c4 .cat-label { background: #2980b9; color: #fff; }
+  .c5 hr { border-color: #27ae60; } .c5 .cat-label { background: #27ae60; color: #fff; }
+
+  .cat-desc {
+    max-width: 960px;
+    margin: 0 auto 14px;
+    font-size: 11.5px;
+    color: #777;
+    font-style: italic;
+    padding: 0 4px;
+    line-height: 1.6;
+  }
+  .cat-desc.hidden { display: none; }
+
+  /* CARD GRID */
+  .store-grid { display: flex; flex-direction: column; gap: 11px; max-width: 960px; margin: 0 auto; }
+
+  .card {
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,.07), 0 0 0 1.5px rgba(0,0,0,.06);
+    display: grid;
+    grid-template-columns: 6px 1fr;
+    transition: transform .14s ease, box-shadow .14s ease;
+  }
+  .card.hidden { display: none; }
+  .card:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,.11); }
+  .card-accent { width: 6px; }
+  .card-body { padding: 14px 17px; }
+
+  .card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-bottom: 8px;
+  }
+  .store-name { font-family: 'Bebas Neue', sans-serif; font-size: 19px; letter-spacing: 1.5px; line-height: 1; }
+  .store-addr { font-size: 10.5px; color: #aaa; font-weight: 500; margin-top: 2px; }
+  .drive-badge {
+    background: #1a1a1a;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .8px;
+    padding: 3px 9px;
+    border-radius: 3px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* TAGS */
+  .tags { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; }
+  .tag {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: .4px;
+    padding: 2px 7px;
+    border-radius: 3px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    border: 1.5px solid;
+  }
+  .t-red   { background: #fff0ec; color: #c0392b; border-color: #f5b7b1; }
+  .t-green { background: #eafaf1; color: #1e8449; border-color: #a9dfbf; }
+  .t-blue  { background: #eaf3fb; color: #1a5276; border-color: #a9cce3; }
+  .t-gold  { background: #fef9e7; color: #b7950b; border-color: #f7dc6f; }
+  .t-gray  { background: #f2f3f4; color: #566573; border-color: #d5dbdb; }
+  .t-purp  { background: #f5eef8; color: #6c3483; border-color: #d2b4de; }
+
+  /* INFO GRID */
+  .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; }
+  .info-block { background: #f8f6f2; border-radius: 5px; padding: 9px 11px; }
+  .info-label { font-size: 8.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: #ccc; margin-bottom: 4px; }
+  .info-val { font-size: 11px; color: #333; font-weight: 500; line-height: 1.5; }
+
+  .hours-grid { display: grid; grid-template-columns: auto 1fr; gap: 1px 7px; }
+  .day-n { color: #bbb; font-weight: 600; font-size: 9.5px; text-transform: uppercase; padding: 1px 0; }
+  .day-h { color: #333; font-weight: 500; font-size: 10.5px; padding: 1px 0; }
+  .day-x { color: #e74c3c; font-weight: 600; font-size: 10.5px; }
+
+  .color-dots { display: flex; gap: 4px; margin-top: 4px; flex-wrap: wrap; align-items: center; }
+  .dot { width: 13px; height: 13px; border-radius: 50%; border: 1.5px solid rgba(0,0,0,.12); display: inline-block; }
+
+  .pro-tip {
+    background: #fffbec;
+    border: 1.5px solid #f7dc6f;
+    border-radius: 4px;
+    padding: 6px 9px;
+    font-size: 10.5px;
+    color: #7d6608;
+    margin-top: 6px;
+    line-height: 1.5;
+  }
+  .pro-tip strong { color: #b7950b; font-size: 8.5px; text-transform: uppercase; letter-spacing: 1.4px; display: block; margin-bottom: 1px; }
+
+  .warn { font-size: 9.5px; color: #c0392b; font-weight: 600; margin-top: 4px; }
+
+  .dir-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    margin-top: 5px;
+    font-size: 9.5px;
+    font-weight: 700;
+    color: #1a5276;
+    text-decoration: none;
+    border-bottom: 1px dotted #a9cce3;
+  }
+  .dir-link:hover { color: #c0392b; border-color: #c0392b; }
+
+  /* NO RESULTS */
+  .no-results {
+    max-width: 960px;
+    margin: 40px auto;
+    text-align: center;
+    padding: 40px 20px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,.06);
+    display: none;
+  }
+  .no-results.show { display: block; }
+  .no-results h3 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+  }
+  .no-results p { font-size: 13px; color: #999; }
+
+  /* FOOTER BOXES */
+  .footer-grid {
+    max-width: 960px;
+    margin: 28px auto 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 11px;
+  }
+  .footer-grid.hidden { display: none; }
+  .footer-box {
+    background: #fff;
+    border-radius: 8px;
+    padding: 14px 17px;
+    box-shadow: 0 2px 7px rgba(0,0,0,.06);
+  }
+  .footer-box-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 13px;
+    letter-spacing: 2px;
+    margin-bottom: 6px;
+  }
+  .footer-box p { font-size: 10.5px; color: #555; line-height: 1.7; }
+  .footer-box .warn-inline { color: #c0392b; font-weight: 700; }
+
+  .site-footer {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 9.5px;
+    color: #ccc;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+
+  @media (max-width: 580px) {
+    .info-grid { grid-template-columns: 1fr; }
+    .card-top { flex-direction: column; }
+    .filter-bar { padding: 14px 14px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="hdr">
+  <h1>DC Metro Thrift & Resale Guide</h1>
+  <div class="sub">Hours &middot; Color Tag Schedules &middot; Discount Days &middot; What Each Place Actually Is</div>
+  <div class="badge">Washington DC &middot; Maryland &middot; Virginia &middot; 27 Stores &middot; 5 Categories</div>
+</div>
+
+<!-- FILTER BAR -->
+<div class="filter-bar">
+  <div class="filter-section">
+    <div class="filter-label"><span class="icon">&#x1F4CD;</span> LOCATION</div>
+    <div class="filter-pills" id="locationFilters">
+      <button class="pill active" data-filter="location" data-value="all">All Areas</button>
+      <button class="pill" data-filter="location" data-value="dc">Washington DC</button>
+      <button class="pill" data-filter="location" data-value="md">Maryland</button>
+      <button class="pill" data-filter="location" data-value="va">Virginia</button>
+    </div>
+  </div>
+  <div class="filter-section">
+    <div class="filter-label"><span class="icon">&#x1F4C5;</span> OPEN ON</div>
+    <div class="filter-pills" id="dayFilters">
+      <button class="pill active" data-filter="day" data-value="all">Any Day</button>
+      <button class="pill" data-filter="day" data-value="0">Sun</button>
+      <button class="pill" data-filter="day" data-value="1">Mon</button>
+      <button class="pill" data-filter="day" data-value="2">Tue</button>
+      <button class="pill" data-filter="day" data-value="3">Wed</button>
+      <button class="pill" data-filter="day" data-value="4">Thu</button>
+      <button class="pill" data-filter="day" data-value="5">Fri</button>
+      <button class="pill" data-filter="day" data-value="6">Sat</button>
+    </div>
+  </div>
+  <div class="filter-section">
+    <div class="filter-label"><span class="icon">&#x1F3F7;</span> CATEGORY</div>
+    <div class="filter-pills" id="categoryFilters">
+      <button class="pill active" data-filter="category" data-value="all">All Types</button>
+      <button class="pill" data-filter="category" data-value="classic" data-active-class="active-red">Classic Thrift</button>
+      <button class="pill" data-filter="category" data-value="budget" data-active-class="active-orange">Budget & Local</button>
+      <button class="pill" data-filter="category" data-value="consignment" data-active-class="active-purple">Consignment</button>
+      <button class="pill" data-filter="category" data-value="vintage" data-active-class="active-blue">Vintage & Antique</button>
+      <button class="pill" data-filter="category" data-value="salvage" data-active-class="active-green">Salvage & Reuse</button>
+    </div>
+  </div>
+</div>
+
+<div class="filter-count" id="filterCount">
+  Showing <strong>27</strong> of 27 stores
+  <button class="clear-filters" id="clearBtn" onclick="clearFilters()">Clear filters</button>
+</div>
+
+<!-- NO RESULTS -->
+<div class="no-results" id="noResults">
+  <h3>No stores match your filters</h3>
+  <p>Try broadening your search &mdash; change the day, location, or category.</p>
+</div>
+
+<!-- ═══ CATEGORY 1: CLASSIC HIGH-VOLUME THRIFT ═══ -->
+<div class="cat-banner c1" data-cat="classic">
+  <hr><div class="cat-label">Classic High-Volume Thrift Stores</div><hr>
+</div>
+<p class="cat-desc" data-cat="classic">Donation-based, constantly rotating stock, color tag discount systems. High volume means more hunting but more finds. Best for everyday thrifting, clothing, housewares, and hidden gems at the lowest prices. Most are nonprofit &mdash; no sales tax.</p>
+
+<div class="store-grid" data-cat="classic">
+
+  <!-- Goodwill S Dakota -->
+  <div class="card" data-location="dc" data-category="classic" data-days="0,1,2,3,4,5,6">
+    <div class="card-accent" style="background:#c0392b;"></div>
+    <div class="card-body">
+      <div class="card-top">
+        <div>
+          <div class="store-name">Goodwill &ndash; South Dakota Ave NE</div>
+          <div class="store-addr">2200 South Dakota Ave NE, Washington DC 20018 &middot; (202) 715-2658</div>
+        </div>
+        <div class="drive-badge">~12 min from downtown</div>
+      </div>
+      <div class="tags">
+        <span class="tag t-green">Nonprofit &middot; No Sales Tax</span>
+        <span class="tag t-blue">Donation Drop-Off</span>
+        <span class="tag t-gray">Parking Lot</span>
+      </div>
+      <div class="info-grid">
+        <div class="info-block">
+          <div class="info-label">Hours</div>
+          <div class="hours-grid">
+            <span class="day-n">Mon&ndash;Sat</span><span class="day-h">10am &ndash; 8pm</span>
+            <span class="day-n">Sun</span><span class="day-h">10am &ndash; 6pm</span>
+          </div>
+          <a class="dir-link" href="https://maps.google.com/?q=2200+South+Dakota+Ave+NE+Washington+DC" target="_blank" rel="noopener">Directions</a>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Color of the Week &middot; 50% Off Daily</div>
+          <div class="color-dots">
+            <div class="dot" style="background:#3498db;" title="Blue"></div>
+            <div class="dot" style="background:#f1c40f;" title="Yellow"></div>
+            <div class="dot" style="background:#e67e22;" title="Orange"></div>
+            <div class="dot" style="background:#27ae60;" title="Green"></div>
+            <div class="dot" style="background:#e74c3c;" title="Red"></div>
+          </div>
+          <div class="info-val" style="margin-top:5px;">Blue, Yellow, Orange, Green, Red &mdash; weekly. Changes every Monday. Check <strong>dcgoodwill.org</strong> for current color.</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Known For</div>
+          <div class="info-val">Spacious, friendly staff. Good clothing &amp; housewares turnover. On-site donation drop-off.</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Discount Notes</div>
+          <div class="info-val">No coupon needed. Excludes furniture, computers, laptops &amp; new goods. Join <strong>Goodwill Rewards Club</strong> free.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Goodwill NY Ave -->
+  <div class="card" data-location="dc" data-category="classic" data-days="0,1,2,3,4,5,6">
+    <div class="card-accent" style="background:#e74c3c;"></div>
+    <div class="card-body">
+      <div class="card-top">
+        <div>
+          <div class="store-name">Goodwill &ndash; New York Ave NE</div>
+          <div class="store-addr">1403 New York Ave NE, Washington DC 20018 &middot; (202) 715-2658</div>
+        </div>
+        <div class="drive-badge">~8 min from downtown</div>
+      </div>
+      <div class="tags">
+        <span class="tag t-green">Nonprofit &middot; No Sales Tax</span>
+        <span class="tag t-blue">Donation Drop-Off</span>
+        <span class="tag t-gray">Parking Garage (1hr validated)</span>
+      </div>
+      <div class="info-grid">
+        <div class="info-block">
+          <div class="info-label">Hours</div>
+          <div class="hours-grid">
+            <span class="day-n">Mon&ndash;Sat</span><span class="day-h">9am &ndash; 7pm</span>
+            <span class="day-n">Sun</span><span class="day-h">10am &ndash; 6pm</span>
+          </div>
+          <a class="dir-link" href="https://maps.google.com/?q=1403+New+York+Ave+NE+Washington+DC" target="_blank" rel="noopener">Directions</a>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Color of the Week &middot; 50% Off Daily</div>
+          <div class="color-dots">
+            <div class="dot" style="background:#3498db;"></div>
+            <div class="dot" style="background:#f1c40f;"></div>
+            <div class="dot" style="background:#e67e22;"></div>
+            <div class="dot" style="background:#27ae60;"></div>
+            <div class="dot" style="background:#e74c3c;"></div>
+          </div>
+          <div class="info-val" style="margin-top:5px;">Same rotating schedule as S Dakota &mdash; both locations run the same color simultaneously.</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Known For</div>
+          <div class="info-val">Compact newer location. Strong clothing &amp; shoe selection. Designer finds reported often. Welcoming staff.</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Heads Up</div>
+          <div class="info-val">Parking garage only &mdash; 1hr validated. Can get busy. Worth the trip for clothing especially.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Salvation Army MD -->
+  <div class="card" data-location="md" data-category="classic" data-days="1,2,3,4,5,6">
+    <div class="card-accent" style="background:#e67e22;"></div>
+    <div class="card-body">
+      <div class="card-top">
+        <div>
+          <div class="store-name">Salvation Army &ndash; Kenilworth Ave</div>
+          <div class="store-addr">3304 Kenilworth Ave, Hyattsville MD 20781 &middot; (301) 403-1704</div>
+        </div>
+        <div class="drive-badge">~15 min from downtown</div>
+      </div>
+      <div class="tags">
+        <span class="tag t-green">Nonprofit &middot; Rehab Mission</span>
+        <span class="tag t-blue">Furniture</span>
+        <span class="tag t-gray">Donation Drop-Off</span>
+      </div>
+      <div class="info-grid">
+        <div class="info-block">
+          <div class="info-label">Hours</div>
+          <div class="hours-grid">
+            <span class="day-n">Mon&ndash;Tue</span><span class="day-h">10am &ndash; 7pm</span>
+            <span class="day-n">Wed</span><span class="day-h">9am &ndash; 7pm</span>
+            <span class="day-n">Thu&ndash;Sat</span><span class="day-h">10am &ndash; 7pm</span>
+            <span class="day-n">Sun</span><span class="day-x">CLOSED</span>
+          </div>
+          <a class="dir-link" href="https://maps.google.com/?q=3304+Kenilworth+Ave+Hyattsville+MD" target="_blank" rel="noopener">Directions</a>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Color Tags &amp; Discounts</div>
+          <div class="info-val">Weekly rotating color tag &mdash; 50% off tagged color all week. Senior &amp; student discount days vary by location.</div>
+          <div class="pro-tip"><strong>Call Ahead</strong>Ask: "What's this week's color?" and "Any discount days?" Policy varies by location.</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Known For</div>
+          <div class="info-val">Great furniture section. Estate sale donations. Clothing organized by color. Proceeds fund rehabilitation programs.</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Heads Up</div>
+          <div class="info-val">Slightly pricier than Goodwill. Donation hours differ from store hours &mdash; call before going to donate. <strong>Closed Sundays.</strong></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2nd Ave MD -->
+  <div class="card" data-location="md" data-category="classic" data-days="0,1,2,3,4,5,6">
+    <div class="card-accent" style="background:#8e44ad;"></div>
+    <div class="card-body">
+      <div class="card-top">
+        <div>
+          <div class="store-name">2nd Ave Thrift Superstore &ndash; Bladensburg</div>
+          <div class="store-addr">4960 Annapolis Rd, Bladensburg MD 20710 &middot; (301) 277-4713</div>
+        </div>
+        <div class="drive-badge">~18 min from downtown</div>
+      </div>
+      <div class="tags">
+        <span class="tag t-gold">Free Super Savers Club</span>
+        <span class="tag t-blue">Savers Family</span>
+        <span class="tag t-gray">For-Profit &middot; Sales Tax</span>
+      </div>
+      <div class="info-grid">
+        <div class="info-block">
+          <div class="info-label">Hours</div>
+          <div class="hours-grid">
+            <span class="day-n">Daily</span><span class="day-h">9am &ndash; 9pm</span>
+          </div>
+          <div class="info-val" style="margin-top:4px;font-size:10px;color:#999;">Latest hours in the area!</div>
+          <a class="dir-link" href="https://maps.google.com/?q=4960+Annapolis+Rd+Bladensburg+MD" target="_blank" rel="noopener">Directions</a>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Color Tags &amp; Discounts</div>
+          <div class="color-dots">
+            <div class="dot" style="background:#8e44ad;"></div>
+            <div class="dot" style="background:#3498db;"></div>
+            <div class="dot" style="background:#27ae60;"></div>
+            <div class="dot" style="background:#f1c40f;"></div>
+            <div class="dot" style="background:#e67e22;"></div>
+            <div class="dot" style="background:#c0392b;"></div>
+          </div>
+          <div class="info-val" style="margin-top:5px;">6-color weekly rotation 50% off. Seniors 55+ ~30% off Tuesdays. Free <strong>Super Savers Club</strong> for email alerts + early sale access.</div>
+          <div class="warn">Call to confirm current color &amp; senior day.</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Known For</div>
+          <div class="info-val">Huge superstore &mdash; 10,000+ items stocked daily. Organized by category &amp; size. Best for clothing &amp; shoes volume.</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Heads Up</div>
+          <div class="info-val">Long checkout lines. Sales tax applies (for-profit). Donate items to get 20% off coupon in return.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Value Village MD -->
+  <div class="card" data-location="md" data-category="classic" data-days="0,1,2,3,4,5,6">
+    <div class="card-accent" style="background:#27ae60;"></div>
+    <div class="card-body">
+      <div class="card-top">
+        <div>
+          <div class="store-name">Value Village &ndash; University Blvd</div>
+          <div class="store-addr">2277 University Blvd E, Adelphi MD 20783 &middot; (301) 422-2406</div>
+        </div>
+        <div class="drive-badge">~22 min from downtown</div>
+      </div>
+      <div class="tags">
+        <span class="tag t-gold">Free Super Savers Club</span>
+        <span class="tag t-blue">Savers Family</span>
+        <span class="tag t-gray">For-Profit &middot; Sales Tax</span>
+      </div>
+      <div class="info-grid">
+        <div class="info-block">
+          <div class="info-label">Hours</div>
+          <div class="hours-grid">
+            <span class="day-n">Mon&ndash;Sat</span><span class="day-h">9am &ndash; 9pm</span>
+            <span class="day-n">Sun</span><span class="day-h">10am &ndash; 7pm</span>
+          </div>
+          <a class="dir-link" href="https://maps.google.com/?q=2277+University+Blvd+E+Adelphi+MD" target="_blank" rel="noopener">Directions</a>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Color Tags &amp; Discounts</div>
+          <div class="info-val">Same 6-color Savers system as 2nd Ave. <strong>Donate items for a 20% off coupon.</strong> Major holiday weekends = 50% off storewide.</div>
+          <div class="warn">Call to confirm current color &amp; senior day.</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Known For</div>
+          <div class="info-val">Most consistently clean &amp; organized thrift store in the area. Spacious. Great clothing &amp; books. Excellent service.</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Best Strategy</div>
+          <div class="info-val">Go at open (9am) for first pick. Good alt when 2nd Ave is picked over &mdash; same tag system, separate inventory.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Unique Silver Spring MD -->
+  <div class="card" data-location="md" data-category="classic" data-days="0,1,2,3,4,5,6">
+    <div class="card-accent" style="background:#2980b9;"></div>
+    <div class="card-body">
+      <div class="card-top">
+        <div>
+          <div class="store-name">Unique &ndash; Silver Spring</div>
+          <div class="store-addr">10141 New Hampshire Ave, Silver Spring MD 20903 &middot; (301) 431-7450</div>
+        </div>
+        <div class="drive-badge">~28 min from downtown</div>
+      </div>
+      <div class="tags">
+        <span class="tag t-gold">Free Super Savers Club</span>
+        <span class="tag t-blue">Savers/Unique Family</span>
+        <span class="tag t-gray">For-Profit &middot; Sales Tax</span>
+      </div>
+      <div class="info-grid">
+        <div class="info-block">
+          <div class="info-label">Hours</div>
+          <div class="hours-grid">
+            <span class="day-n">Mon&ndash;Sat</span><span class="day-h">9am &ndash; 9pm</span>
+            <span class="day-n">Sun</span><span class="day-h">10am &ndash; 7pm</span>
+          </div>
+          <a class="dir-link" href="https://maps.google.com/?q=10141+New+Hampshire+Ave+Silver+Spring+MD" target="_blank" rel="noopener">Directions</a>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Color Tags &amp; Discounts</div>
+          <div class="info-val">Same 6-color Savers/Unique rotating system. Free Super Savers Club recommended. Holiday sales same chain-wide.</div>
+          <div class="warn">Call to confirm current color &amp; discount days.</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Known For</div>
+          <div class="info-val">Large superstore with huge women's clothing section. Strong housewares &amp; books. Worth pairing with a Silver Spring errand run.</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Heads Up</div>
+          <div class="info-val">No fitting rooms. Strict 14-day exchange policy &mdash; tags must stay on. Prices can skew high per reviewers.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Goodwill Columbia Pike VA -->
+  <div class="card" data-location="va" data-category="classic" data-days="0,1,2,3,4,5,6">
+    <div class="card-accent" style="background:#c0392b;"></div>
+    <div class="card-body">
+      <div class="card-top">
+        <div>
+          <div class="store-name">Goodwill &ndash; Columbia Pike, Arlington</div>
+          <div class="store-addr">4714 Columbia Pike, Arlington VA 22204 &middot; (703) 979-5947</div>
+        </div>
+        <div class="drive-badge">~15 min from downtown</div>
+      </div>
+      <div class="tags">
+        <span class="tag t-green">Nonprofit &middot; No Sales Tax</span>
+        <span class="tag t-blue">Donation Drop-Off</span>
+        <span class="tag t-gray">Parking Lot</span>
+      </div>
+      <div class="info-grid">
+        <div class="info-block">
+          <div class="info-label">Hours</div>
+          <div class="hours-grid">
+            <span class="day-n">Mon&ndash;Sat</span><span class="day-h">10am &ndash; 8pm</span>
+            <span class="day-n">Sun</span><span class="day-h">10am &ndash; 6pm</span>
+          </div>
+          <a class="dir-link" href="https://maps.google.com/?q=4714+Columbia+Pike+Arlington+VA" target="_blank" rel="noopener">Directions</a>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Color of the Week &middot; 50% Off Daily</div>
+          <div class="color-dots">
+            <div class="dot" style="background:#3498db;" title="Blue"></div>
+            <div class="dot" style="background:#f1c40f;" title="Yellow"></div>
+            <div class="dot" style="background:#e67e22;" title="Orange"></div>
+            <div class="dot" style="background:#27ae60;" title="Green"></div>
+            <div class="dot" style="background:#e74c3c;" title="Red"></div>
+          </div>
+          <div class="info-val" style="margin-top:5px;">Same DC Goodwill color rotation. Changes every Monday. Check <strong>dcgoodwill.org</strong> for current color.</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Known For</div>
+          <div class="info-val">Solid mid-size store on the Columbia Pike corridor. Good clothing &amp; housewares. Picks up overflow from the now-closed Glebe Rd location.</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Heads Up</div>
+          <div class="info-val">The popular Glebe Rd Goodwill is closed until 2027 for redevelopment &mdash; this is the go-to Arlington Goodwill right now.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Goodwill Falls Church VA -->
+  <div class="card" data-location="va" data-category="classic" data-days="0,1,2,3,4,5,6">
+    <div class="card-accent" style="background:#e74c3c;"></div>
+    <div class="card-body">
+      <div class="card-top">
+        <div>
+          <div class="store-name">Goodwill &ndash; Arlington Blvd, Falls Church</div>
+          <div class="store-addr">6136-A Arlington Blvd, Falls Church VA 22044 &middot; (703) 533-1840</div>
+        </div>
+        <div class="drive-badge">~20 min from downtown</div>
+      </div>
+      <div class="tags">
+        <span class="tag t-green">Nonprofit &middot; No Sales Tax</span>
+        <span class="tag t-gray">No Donation Drop-Off Here</span>
+      </div>
+      <div class="info-grid">
+        <div class="info-block">
+          <div class="info-label">Hours</div>
+          <div class="hours-grid">
+            <span class="day-n">Mon&ndash;Sat</span><span class="day-h">10am &ndash; 8pm</span>
+            <span class="day-n">Sun</span><span class="day-h">10am &ndash; 6pm</span>
+          </div>
+          <a class="dir-link" href="https://maps.google.com/?q=6136+Arlington+Blvd+Falls+Church+VA" target="_blank" rel="noopener">Directions</a>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Color of the Week &middot; 50% Off Daily</div>
+          <div class="color-dots">
+            <div class="dot" style="background:#3498db;"></div>
+            <div class="dot" style="background:#f1c40f;"></div>
+            <div class="dot" style="background:#e67e22;"></div>
+            <div class="dot" style="background:#27ae60;"></div>
+            <div class="dot" style="background:#e74c3c;"></div>
+          </div>
+          <div class="info-val" style="margin-top:5px;">Same DC Goodwill rotation. Falls Church area gets strong donations from affluent neighborhoods nearby.</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Known For</div>
+          <div class="info-val">Benefits from wealthy NoVA donor base. Good designer clothing finds. Worth combining with a Unique or Clock Tower run nearby.</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Heads Up</div>
+          <div class="info-val">No donation drop-off at this location &mdash; retail only. Willston II Shopping Center.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Unique Merrifield VA -->
+  <div class="card" data-location="va" data-category="classic" data-days="0,1,2,3,4,5,6">
+    <div class="card-accent" style="background:#8e44ad;"></div>
+    <div class="card-body">
+      <div class="card-top">
+        <div>
+          <div class="store-name">Unique &ndash; Merrifield / Falls Church</div>
+          <div class="store-addr">2956 Gallows Rd, Falls Church VA 22042 &middot; (703) 992-6560</div>
+        </div>
+        <div class="drive-badge">~22 min from downtown</div>
+      </div>
+      <div class="tags">
+        <span class="tag t-gold">Free Super Savers Club</span>
+        <span class="tag t-blue">Savers/Unique Family</span>
+        <span class="tag t-gray">For-Profit &middot; Sales Tax</span>
+      </div>
+      <div class="info-grid">
+        <div class="info-block">
+          <div class="info-label">Hours</div>
+          <div class="hours-grid">
+            <span class="day-n">Mon&ndash;Sat</span><span class="day-h">9am &ndash; 9pm</span>
+            <span class="day-n">Sun</span><span class="day-h">10am &ndash; 7pm</span>
+          </div>
+          <a class="dir-link" href="https://maps.google.com/?q=2956+Gallows+Rd+Falls+Church+VA" target="_blank" rel="noopener">Directions</a>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Color Tags &amp; Discounts</div>
+          <div class="color-dots">
+            <div class="dot" style="background:#8e44ad;"></div>
+            <div class="dot" style="background:#3498db;"></div>
+            <div class="dot" style="background:#27ae60;"></div>
+            <div class="dot" style="background:#f1c40f;"></div>
+            <div class="dot" style="background:#e67e22;"></div>
+            <div class="dot" style="background:#c0392b;"></div>
+          </div>
+          <div class="info-val" style="margin-top:5px;">Same 6-color Savers/Unique system. Huge warehouse-style store. <strong>Super Savers Club</strong> for early sale access.</div>
+          <div class="warn">Call to confirm current color &amp; senior day.</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Known For</div>
+          <div class="info-val">One of the most popular thrift stores in all of NoVA. Massive inventory &mdash; clothing, home goods, books, electronics. Constantly changing stock. Reseller favorite.</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Best Strategy</div>
+          <div class="info-val">Go early on restock days. Pair with Goodwill Falls Church and Clock Tower Thrift nearby for a full Falls Church thrift run.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Salvation Army Alexandria VA -->
+  <div class="card" data-location="va" data-category="classic" data-days="1,2,3,4,5,6">
+    <div class="card-accent" style="background:#e67e22;"></div>
+    <div class="card-body">
+      <div class="card-top">
+        <div>
+          <div class="store-name">Salvation Army &ndash; Little River Tpk</div>
+          <div class="store-addr">6528 Little River Turnpike, Alexandria VA 22312 &middot; (703) 642-9270</div>
+        </div>
+        <div class="drive-badge">~25 min from downtown</div>
+      </div>
+      <div class="tags">
+        <span class="tag t-green">Nonprofit &middot; Rehab Mission</span>
+        <span class="tag t-blue">Furniture</span>
+        <span class="tag t-gray">Donation Drop-Off</span>
+      </div>
+      <div class="info-grid">
+        <div class="info-block">
+          <div class="info-label">Hours</div>
+          <div class="hours-grid">
+            <span class="day-n">Mon&ndash;Sat</span><span class="day-h">10am &ndash; 7pm</span>
+            <span class="day-n">Sun</span><span class="day-x">CLOSED</span>
+          </div>
+          <a class="dir-link" href="https://maps.google.com/?q=6528+Little+River+Turnpike+Alexandria+VA" target="_blank" rel="noopener">Directions</a>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Color Tags &amp; Discounts</div>
+          <div class="info-val">Weekly rotating color tag &mdash; 50% off tagged color. Senior &amp; student discount days vary. Call to confirm.</div>
+          <div class="pro-tip"><strong>Call Ahead</strong>Ask: "What's this week's color?" and "Any discount days coming up?"</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Known For</div>
+          <div class="info-val">Spacious store with strong furniture section. Busy but worth digging. Good clothing and housewares. Proceeds fund rehabilitation programs.</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Heads Up</div>
+          <div class="info-val"><strong>Closed Sundays.</strong> Can get picked over by mid-afternoon &mdash; go early for best selection.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /store-grid cat1 -->
+
+<!-- ═══ CATEGORY 2: BUDGET & NEIGHBORHOOD ═══ -->
+<div class="cat-banner c2" data-cat="budget">
+  <hr><div class="cat-label">Budget &amp; Neighborhood Thrift</div><hr>
+</div>
+<p class="cat-desc" data-cat="budget">Small, independently run, neighborhood-rooted shops. Often cheaper than the big chains, smaller selection, but more character. Best for spending less, supporting local, and digging for gems.</p>
+
+<div class="store-grid" data-cat="budget">
+
+  <!-- Rosario's DC -->
+  <div class="card" data-location="dc" data-category="budget" data-days="0,1,2,3,4,5,6">
+    <div class="card-accent" style="background:#c0392b;"></div>
+    <div class="card-body">
+      <div class="card-top">
+        <div>
+          <div class="store-name">Rosario's Thrift Store</div>
+          <div class="store-addr">3616 14th St NW, Washington DC 20010 &middot; (202) 748-5444 &middot; Columbia Heights</div>
+        </div>
+        <div class="drive-badge">~16 min from downtown</div>
+      </div>
+      <div class="tags">
+        <span class="tag t-red">3 Items for $10</span>
+        <span class="tag t-green">Among DC's Cheapest</span>
+        <span class="tag t-gray">Neighborhood Shop</span>
+      </div>
+      <div class="info-grid">
+        <div class="info-block">
+          <div class="info-label">Hours</div>
+          <div class="hours-grid">
+            <span class="day-n">Mon&ndash;Thu</span><span class="day-h">9am &ndash; 6pm</span>
+            <span class="day-n">Fri</span><span class="day-h">9am &ndash; 5pm</span>
+            <span class="day-n">Sat</span><span class="day-h">9am &ndash; 6pm</span>
+            <span class="day-n">Sun</span><span class="day-h">10am &ndash; 6pm</span>
+          </div>
+          <a class="dir-link" href="https://maps.google.com/?q=3616+14th+St+NW+Washington+DC" target="_blank" rel="noopener">Directions</a>
+        </div>
+        <div class="info-block">
+          <div class="info-label">How Pricing Works</div>
+          <div class="info-val"><strong>No price tag = 3 for $10.</strong> Has a tag = that's the price. Most clothing falls in the 3/$10 bucket. $1 racks too. One of the most affordable shops in DC.</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Known For</div>
+          <div class="info-val">Affordable basics, men's jeans &amp; shoes, jewelry section worth a look. Packed racks. Friendly owners.</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Best For</div>
+          <div class="info-val">Budget thrifting &amp; bulk finds. Go in knowing you'll dig &mdash; patience is rewarded. Higher-end pieces sometimes slip through at 3/$10.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Frugalista DC -->
+  <div class="card" data-location="dc" data-category="budget" data-days="0,1,2,3,4,5,6">
+    <div class="card-accent" style="background:#e67e22;"></div>
+    <div class="card-body">
+      <div class="card-top">
+        <div>
+          <div class="store-name">Frugalista</div>
+          <div class="store-addr">3055 Mt Pleasant St NW, Washington DC 20009 &middot; (202) 518-5968 &middot; Mt Pleasant</div>
+        </div>
+        <div class="drive-badge">~18 min from downtown</div>
+      </div>
+      <div class="tags">
+        <span class="tag t-gold">4.3 Google Rating</span>
+        <span class="tag t-blue">On-Site Tailor!</span>
+        <span class="tag t-gray">Neighborhood Thrift</span>
+      </div>
+      <div class="info-grid">
+        <div class="info-block">
+          <div class="info-label">Hours</div>
+          <div class="hours-grid">
+            <span class="day-n">Mon&ndash;Fri</span><span class="day-h">11am &ndash; 6pm</span>
+            <span class="day-n">Sat</span><span class="day-h">10am &ndash; 6pm</span>
+            <span class="day-n">Sun</span><span class="day-h">11am &ndash; 6pm</span>
+          </div>
+          <a class="dir-link" href="https://maps.google.com/?q=3055+Mt+Pleasant+St+NW+Washington+DC" target="_blank" rel="noopener">Directions</a>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Pricing &amp; Discounts</div>
+          <div class="info-val">No standard color tag system. Prices set by store. Monthly sale events. Watch for markdowns on older stock.</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Known For</div>
+          <div class="info-val">Great clothing including original-tagged items. Men's jeans &amp; shoes standout. <strong>Affordable on-site tailor</strong> &mdash; alterations same or next day. Fun neighborhood vibe.</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Best For</div>
+          <div class="info-val">Clothing + same-day alterations in one stop. Reviewers found winter coats for $17 and ball gowns under $20. Dig for the gems.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Clock Tower Thrift VA -->
+  <div class="card" data-location="va" data-category="budget" data-days="0,2,3,4,5,6">
+    <div class="card-accent" style="background:#27ae60;"></div>
+    <div class="card-body">
+      <div class="card-top">
+        <div>
+          <div class="store-name">Clock Tower Thrift Shop</div>
+          <div class="store-addr">2860 Annandale Rd, Falls Church VA 22042 &middot; (703) 237-1910</div>
+        </div>
+        <div class="drive-badge">~22 min from downtown</div>
+      </div>
+      <div class="tags">
+        <span class="tag t-green">Nonprofit &middot; NVFS</span>
+        <span class="tag t-gold">4.3 Google Rating</span>
+        <span class="tag t-gray">Neighborhood Gem</span>
+      </div>
+      <div class="info-grid">
+        <div class="info-block">
+          <div class="info-label">Hours</div>
+          <div class="hours-grid">
+            <span class="day-n">Mon</span><span class="day-x">CLOSED</span>
+            <span class="day-n">Tue&ndash;Sun</span><span class="day-h">10am &ndash; 6pm</span>
+          </div>
+          <a class="dir-link" href="https://maps.google.com/?q=2860+Annandale+Rd+Falls+Church+VA" target="_blank" rel="noopener">Directions</a>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Pricing</div>
+          <div class="info-val">No color tag system. Prices set by store &mdash; generally very affordable. Benefits Northern Virginia Family Services programs.</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Known For</div>
+          <div class="info-val">Smaller shop packed with interesting decor, home accessories, and vintage finds. Great for people who love to dig. Strong housewares &amp; art section.</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Best For</div>
+          <div class="info-val">Pair with Unique Merrifield nearby for a full Falls Church thrift run. <strong>Closed Mondays.</strong> Open Sundays &mdash; rare for the area.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- The Closet Herndon VA -->
+  <div class="card" data-location="va" data-category="budget" data-days="1,2,3,4,5,6">
+    <div class="card-accent" style="background:#2980b9;"></div>
+    <div class="card-body">
+      <div class="card-top">
+        <div>
+          <div class="store-name">The Closet of Greater Herndon</div>
+          <div class="store-addr">845 Station St, Herndon VA 20170 &middot; (703) 437-7652</div>
+        </div>
+        <div class="drive-badge">~35 min from downtown</div>
+      </div>
+      <div class="tags">
+        <span class="tag t-green">Nonprofit &middot; Since 1974</span>
+        <span class="tag t-red">Very Low Prices</span>
+        <span class="tag t-gray">Volunteer-Run</span>
+      </div>
+      <div class="info-grid">
+        <div class="info-block">
+          <div class="info-label">Hours</div>
+          <div class="hours-grid">
+            <span class="day-n">Mon</span><span class="day-h">10am &ndash; 8pm</span>
+            <span class="day-n">Tue&ndash;Fri</span><span class="day-h">10am &ndash; 5pm</span>
+            <span class="day-n">Sat</span><span class="day-h">10am &ndash; 5pm</span>
+            <span class="day-n">Sun</span><span class="day-x">CLOSED</span>
+          </div>
+          <div class="info-val" style="margin-top:4px;font-size:10px;color:#999;">Late hours on Mondays &amp; Thursdays until 8pm!</div>
+          <a class="dir-link" href="https://maps.google.com/?q=845+Station+St+Herndon+VA" target="_blank" rel="noopener">Directions</a>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Pricing</div>
+          <div class="info-val">Extremely affordable &mdash; volunteer-run, church-founded nonprofit. Prices well below chain thrift stores. Proceeds help low-income families in the area.</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Known For</div>
+          <div class="info-val">50+ years serving Herndon. Located in historic downtown. Very popular with budget thrifters. Strong clothing, housewares, and book selection. Friendly volunteers.</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Heads Up</div>
+          <div class="info-val"><strong>Closed Sundays.</strong> Open late Mon &amp; Thu (8pm). Worth the drive from DC for the prices alone. Donations from affluent Reston/Herndon neighborhoods.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- The Twig VA -->
+  <div class="card" data-location="va" data-category="budget" data-days="3,4,5,6">
+    <div class="card-accent" style="background:#8e44ad;"></div>
+    <div class="card-body">
+      <div class="card-top">
+        <div>
+          <div class="store-name">The Twig Thrift Shop</div>
+          <div class="store-addr">106 N Columbus St, Alexandria VA 22314 &middot; (703) 683-5544 &middot; Old Town</div>
+        </div>
+        <div class="drive-badge">~15 min from downtown</div>
+      </div>
+      <div class="tags">
+        <span class="tag t-green">Nonprofit &middot; Benefits Inova</span>
+        <span class="tag t-gold">4.2 Google Rating</span>
+        <span class="tag t-gray">Old Town Alexandria</span>
+      </div>
+      <div class="info-grid">
+        <div class="info-block">
+          <div class="info-label">Hours</div>
+          <div class="hours-grid">
+            <span class="day-n">Sun&ndash;Tue</span><span class="day-x">CLOSED</span>
+            <span class="day-n">Wed&ndash;Fri</span><span class="day-h">10am &ndash; 3pm</span>
+            <span class="day-n">Sat</span><span class="day-h">10am &ndash; 4pm</span>
+          </div>
+          <div class="info-val" style="margin-top:4px;font-size:10px;color:#999;">Limited hours &mdash; plan your trip! Wed &amp; Thu evenings 6pm&ndash;8pm too.</div>
+          <a class="dir-link" href="https://maps.google.com/?q=106+N+Columbus+St+Alexandria+VA" target="_blank" rel="noopener">Directions</a>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Pricing</div>
+          <div class="info-val">Affordable prices. Volunteer-run shop benefits Inova Alexandria Hospital. Donations come from Old Town's well-off residents &mdash; quality is high for the price.</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Known For</div>
+          <div class="info-val">Designer clothing, vintage jewelry, out-of-print books, furniture, home accessories, and pet supplies. Large variety from high-end to everyday finds.</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Best For</div>
+          <div class="info-val">Combine with a walk down King Street for a full Old Town thrift day (Current Boutique &amp; Mint Condition nearby). <strong>Only open Wed&ndash;Sat.</strong></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /store-grid cat2 -->
+
+<!-- ═══ CATEGORY 3: SPECIALTY CONSIGNMENT ═══ -->
+<div class="cat-banner c3" data-cat="consignment">
+  <hr><div class="cat-label">Specialty Consignment &amp; Curated Thrift</div><hr>
+</div>
+<p class="cat-desc" data-cat="consignment">Owner-curated or consignment-based &mdash; sellers bring items in, the shop selects what makes the cut. More selective than traditional thrift, prices are higher but so are the highs. No color tag systems. Great for specific brands, unique clothing, and furniture with real character.</p>
+
+<div class="store-grid" data-cat="consignment">
+
+  <!-- Fia's DC -->
+  <div class="card" data-location="dc" data-category="consignment" data-days="1,2,3,4,5,6">
+    <div class="card-accent" style="background:#f1c40f;"></div>
+    <div class="card-body">
+      <div class="card-top">
+        <div>
+          <div class="store-name">Fia's Fabulous Finds</div>
+          <div class="store-addr">843 Upshur St NW, Washington DC 20011 &middot; (202) 492-8278 &middot; Petworth</div>
+        </div>
+        <div class="drive-badge">~20 min from downtown</div>
+      </div>
+      <div class="tags">
+        <span class="tag t-red">$2 TUESDAYS</span>
+        <span class="tag t-gold">4.7 Google Rating</span>
+        <span class="tag t-gray">Consignment</span>
+      </div>
+      <div class="info-grid">
+        <div class="info-block">
+          <div class="info-label">Hours</div>
+          <div class="hours-grid">
+            <span class="day-n">Mon</span><span class="day-x">CLOSED</span>
+            <span class="day-n">Tue&ndash;Fri</span><span class="day-h">12pm &ndash; 7pm</span>
+            <span class="day-n">Sat</span><span class="day-h">11am &ndash; 6pm</span>
+            <span class="day-n">Sun</span><span class="day-h">12pm &ndash; 5pm</span>
+          </div>
+          <a class="dir-link" href="https://maps.google.com/?q=843+Upshur+St+NW+Washington+DC" target="_blank" rel="noopener">Directions</a>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Two Dollar Tuesdays!</div>
+          <div class="info-val">Many items just <strong>$2 every Tuesday</strong> &mdash; brand-new tagged Champion gear, Chanel bags, vintage pieces. Arrive early before the best walks out.</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Known For</div>
+          <div class="info-val">Highest-rated thrift shop in DC. Owner's infectious personality. Eclectic brand mix. Treasure hunt energy. Clean &amp; organized.</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">What "Consignment" Means</div>
+          <div class="info-val">Sellers bring items in; owner curates what sells. Not donation-based &mdash; more selective, higher quality ceiling than Goodwill.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Something Kind of New MD -->
+  <div class="card" data-location="md" data-category="consignment" data-days="0,1,2,3,4,5,6">
+    <div class="card-accent" style="background:#7f8c8d;"></div>
+    <div class="card-body">
+      <div class="card-top">
+        <div>
+          <div class="store-name">Something Kind of New</div>
+          <div class="store-addr">4511 Rhode Island Ave, North Brentwood MD 20722 &middot; (301) 802-4141</div>
+        </div>
+        <div class="drive-badge">~10 min from downtown</div>
+      </div>
+      <div class="tags">
+        <span class="tag t-gold">4.6 Google Rating</span>
+        <span class="tag t-purp">Furniture Focus</span>
+        <span class="tag t-gray">Consignment &middot; Owner: Sidney</span>
+      </div>
+      <div class="info-grid">
+        <div class="info-block">
+          <div class="info-label">Hours</div>
+          <div class="hours-grid">
+            <span class="day-n">Daily</span><span class="day-h">12pm &ndash; 5pm</span>
+          </div>
+          <div class="info-val" style="margin-top:4px;font-size:10px;color:#999;">Open 7 days. Closes at 5pm &mdash; plan accordingly.</div>
+          <a class="dir-link" href="https://maps.google.com/?q=4511+Rhode+Island+Ave+North+Brentwood+MD" target="_blank" rel="noopener">Directions</a>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Pricing</div>
+          <div class="info-val">Individually priced &mdash; no color tag system. Owner Sidney is known for being flexible. <strong>Ask about deals and delivery</strong> on large pieces.</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Known For</div>
+          <div class="info-val">Large space with gorgeous furniture, home decor, and some clothing. High-end pieces at reasonable prices. Sidney knows her inventory cold and is deeply kind. Delivery available on large pieces.</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Best For</div>
+          <div class="info-val">Furniture hunting close to DC. Talk to Sidney &mdash; she'll match you to the right piece. Reviewers rave about bars, statement furniture, and unique home finds.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Current Boutique VA -->
+  <div class="card" data-location="va" data-category="consignment" data-days="0,1,2,3,4,5,6">
+    <div class="card-accent" style="background:#e67e22;"></div>
+    <div class="card-body">
+      <div class="card-top">
+        <div>
+          <div class="store-name">Current Boutique</div>
+          <div class="store-addr">1009 King St, Alexandria VA 22314 &middot; (703) 549-2272 &middot; Old Town</div>
+        </div>
+        <div class="drive-badge">~15 min from downtown</div>
+      </div>
+      <div class="tags">
+        <span class="tag t-purp">Designer Consignment</span>
+        <span class="tag t-gold">4.3 Google Rating</span>
+        <span class="tag t-gray">Old Town King Street</span>
+      </div>
+      <div class="info-grid">
+        <div class="info-block">
+          <div class="info-label">Hours</div>
+          <div class="hours-grid">
+            <span class="day-n">Mon&ndash;Fri</span><span class="day-h">12pm &ndash; 8pm</span>
+            <span class="day-n">Sat</span><span class="day-h">11am &ndash; 8pm</span>
+            <span class="day-n">Sun</span><span class="day-h">11am &ndash; 6pm</span>
+          </div>
+          <a class="dir-link" href="https://maps.google.com/?q=1009+King+St+Alexandria+VA" target="_blank" rel="noopener">Directions</a>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Pricing</div>
+          <div class="info-val">Designer consignment &mdash; prices reflect the brands but well below retail. Think Anthropologie, Theory, Tory Burch at 50&ndash;70% off original.</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Known For</div>
+          <div class="info-val">Pre-loved designer women's clothing, shoes, and handbags. Cute boutique feel, well-organized. Right on King Street &mdash; easy to combine with other Old Town shopping.</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Best For</div>
+          <div class="info-val">Designer clothing at consignment prices. Walk a few blocks to Mint Condition and The Twig for a full Old Town thrift circuit.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mint Condition VA -->
+  <div class="card" data-location="va" data-category="consignment" data-days="0,1,2,3,4,5,6">
+    <div class="card-accent" style="background:#f1c40f;"></div>
+    <div class="card-body">
+      <div class="card-top">
+        <div>
+          <div class="store-name">Mint Condition</div>
+          <div class="store-addr">122 A S Royal St, Alexandria VA 22314 &middot; (703) 836-6468 &middot; Old Town</div>
+        </div>
+        <div class="drive-badge">~15 min from downtown</div>
+      </div>
+      <div class="tags">
+        <span class="tag t-purp">Luxury Consignment</span>
+        <span class="tag t-gold">Washingtonian "Best Of"</span>
+        <span class="tag t-gray">Louis Vuitton &middot; Prada &middot; Fendi</span>
+      </div>
+      <div class="info-grid">
+        <div class="info-block">
+          <div class="info-label">Hours</div>
+          <div class="hours-grid">
+            <span class="day-n">Mon&ndash;Sat</span><span class="day-h">10am &ndash; 5pm</span>
+            <span class="day-n">Sun</span><span class="day-h">12pm &ndash; 5pm</span>
+          </div>
+          <a class="dir-link" href="https://maps.google.com/?q=122+S+Royal+St+Alexandria+VA" target="_blank" rel="noopener">Directions</a>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Pricing</div>
+          <div class="info-val">Upscale consignment &mdash; luxury brands at resale. Named one of the region's best consignment shops by <strong>Washingtonian</strong> and other publications.</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Known For</div>
+          <div class="info-val">Louis Vuitton, Prada, Kate Spade, Manolo Blahnik, Fendi. Women's clothing, handbags, shoes, and jewelry in a fresh boutique atmosphere. Inventory changes constantly.</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Heads Up</div>
+          <div class="info-val">Boutique feel &mdash; smaller but highly curated. Call ahead or email to schedule consignment appointments. Steps from Current Boutique for a two-stop designer run.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /store-grid cat3 -->
+
+<!-- ═══ CATEGORY 4: CURATED VINTAGE & ANTIQUE ═══ -->
+<div class="cat-banner c4" data-cat="vintage">
+  <hr><div class="cat-label">Curated Vintage &amp; Antique Shops</div><hr>
+</div>
+<p class="cat-desc" data-cat="vintage">NOT thrift stores. Every piece is hand-selected by the owner or resellers. Prices reflect the curation and expertise. No color tag discount systems. Best for sourcing statement furniture, art, vintage clothing, and specialty pieces with provenance and real resale value.</p>
+
+<div class="store-grid" data-cat="vintage">
+
+  <!-- VVV DC -->
+  <div class="card" data-location="dc" data-category="vintage" data-days="0,1,2,3,4,5,6">
+    <div class="card-accent" style="background:#3498db;"></div>
+    <div class="card-body">
+      <div class="card-top">
+        <div>
+          <div class="store-name">Vintage Vintage Vintage (VVV)</div>
+          <div class="store-addr">1348 4th St NE, Washington DC 20002 &middot; Union Market District</div>
+        </div>
+        <div class="drive-badge">~5 min from downtown</div>
+      </div>
+      <div class="tags">
+        <span class="tag t-blue">Curated Vintage</span>
+        <span class="tag t-gold">Union Market &middot; 4.4 Rating</span>
+        <span class="tag t-gray">Higher Price Point</span>
+      </div>
+      <div class="info-grid">
+        <div class="info-block">
+          <div class="info-label">Hours</div>
+          <div class="hours-grid">
+            <span class="day-n">Mon&ndash;Fri</span><span class="day-h">12pm &ndash; 7pm</span>
+            <span class="day-n">Sat&ndash;Sun</span><span class="day-h">10am &ndash; 7pm</span>
+          </div>
+          <a class="dir-link" href="https://maps.google.com/?q=1348+4th+St+NE+Washington+DC" target="_blank" rel="noopener">Directions</a>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Pricing</div>
+          <div class="info-val">Fixed pricing &mdash; no color tag rotation. Rotating roster of local resellers from DC, Baltimore &amp; Richmond. Follow social media for pop-up sales.</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Known For</div>
+          <div class="info-val">Stunning converted bank building at Union Market. Inclusive sizing. Vintage clothing, home decor, art, accessories. Well-curated, ever-changing.</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Best For</div>
+          <div class="info-val">Statement vintage pieces with real resale value. Not for bargain hunting &mdash; for finding genuinely special things you won't see anywhere else.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GoodWood DC -->
+  <div class="card" data-location="dc" data-category="vintage" data-days="0,1,2,3,4,5,6">
+    <div class="card-accent" style="background:#2c3e50;"></div>
+    <div class="card-body">
+      <div class="card-top">
+        <div>
+          <div class="store-name">GoodWood</div>
+          <div class="store-addr">1428 U St NW, Washington DC 20009 &middot; (202) 986-3640 &middot; U Street Corridor</div>
+        </div>
+        <div class="drive-badge">~18 min from downtown</div>
+      </div>
+      <div class="tags">
+        <span class="tag t-blue">Antique &amp; Vintage Furniture</span>
+        <span class="tag t-gold">DC Institution Since 1994</span>
+        <span class="tag t-gray">Higher Price Point</span>
+      </div>
+      <div class="info-grid">
+        <div class="info-block">
+          <div class="info-label">Hours</div>
+          <div class="hours-grid">
+            <span class="day-n">Daily</span><span class="day-h">12pm &ndash; 6pm</span>
+          </div>
+          <div class="info-val" style="margin-top:4px;font-size:10px;color:#999;">Open 7 days a week.</div>
+          <a class="dir-link" href="https://maps.google.com/?q=1428+U+St+NW+Washington+DC" target="_blank" rel="noopener">Directions</a>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Pricing</div>
+          <div class="info-val">Fixed &mdash; prices not negotiable per owner. Fresh stock arrives <strong>Thursdays</strong>. Follow Instagram to preview new pieces before visiting.</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Known For</div>
+          <div class="info-val">DC's most beloved antique shop since 1994. 19th century antiques, Mid-Century Modern furniture, vintage clothing &amp; apparel. One of DC's only niche perfume counters. Bohemian, London-meets-Brooklyn vibe.</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Best For / Note</div>
+          <div class="info-val">Quality period furniture with provenance. <strong>Go Thursdays</strong> for fresh stock. Mixed staff reviews &mdash; some love them, some find them aloof. Check Instagram first.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Miss Pixie's DC -->
+  <div class="card" data-location="dc" data-category="vintage" data-days="0,1,2,3,4,5,6">
+    <div class="card-accent" style="background:#8e44ad;"></div>
+    <div class="card-body">
+      <div class="card-top">
+        <div>
+          <div class="store-name">Miss Pixie's</div>
+          <div class="store-addr">1830 Columbia Rd NW, Washington DC 20009 &middot; (202) 232-8171 &middot; Adams Morgan</div>
+        </div>
+        <div class="drive-badge">~17 min from downtown</div>
+      </div>
+      <div class="tags">
+        <span class="tag t-purp">Curated Vintage Home Goods</span>
+        <span class="tag t-gold">4.4 Google Rating</span>
+        <span class="tag t-gray">DC Landmark</span>
+      </div>
+      <div class="info-grid">
+        <div class="info-block">
+          <div class="info-label">Hours</div>
+          <div class="info-val" style="color:#999;font-style:italic;font-size:10.5px;">Hours can be irregular &mdash; check Instagram or call ahead before making the trip.</div>
+          <a class="dir-link" href="https://maps.google.com/?q=1830+Columbia+Rd+NW+Washington+DC" target="_blank" rel="noopener">Directions</a>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Pricing</div>
+          <div class="info-val">Fixed pricing &mdash; curated shop, not thrift. <strong>Follow Instagram</strong> to catch treasures before they sell. Things move quickly here.</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Known For</div>
+          <div class="info-val">True DC institution. Vintage &amp; antique furniture, art, home goods, MCM pieces, vintage postcards &amp; old photographs. Quirky, eclectic vibe. The eponymous Miss Pixie is often present.</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Best For</div>
+          <div class="info-val">One-of-a-kind home pieces, art, and decor. Dig through the vintage postcard &amp; photo bins. Follow Instagram for first look at new inventory &mdash; things disappear fast.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Evolution Home VA -->
+  <div class="card" data-location="va" data-category="vintage" data-days="0,2,3,4,5,6">
+    <div class="card-accent" style="background:#e67e22;"></div>
+    <div class="card-body">
+      <div class="card-top">
+        <div>
+          <div class="store-name">Evolution Home</div>
+          <div class="store-addr">861 S Pickett St, Alexandria VA 22304 &middot; (703) 519-1911</div>
+        </div>
+        <div class="drive-badge">~18 min from downtown</div>
+      </div>
+      <div class="tags">
+        <span class="tag t-blue">Multi-Dealer Antique Mall</span>
+        <span class="tag t-gold">4.5 Google Rating</span>
+        <span class="tag t-gray">25+ Vendors</span>
+      </div>
+      <div class="info-grid">
+        <div class="info-block">
+          <div class="info-label">Hours</div>
+          <div class="hours-grid">
+            <span class="day-n">Mon</span><span class="day-x">CLOSED</span>
+            <span class="day-n">Tue&ndash;Sat</span><span class="day-h">10am &ndash; 6pm</span>
+            <span class="day-n">Sun</span><span class="day-h">11am &ndash; 5pm</span>
+          </div>
+          <a class="dir-link" href="https://maps.google.com/?q=861+S+Pickett+St+Alexandria+VA" target="_blank" rel="noopener">Directions</a>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Pricing</div>
+          <div class="info-val">Each of 25+ independent dealers sets their own prices. Range from affordable vintage to high-end antiques. Negotiation depends on the vendor.</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Known For</div>
+          <div class="info-val">Large antique, vintage, and contemporary furniture &amp; home decor consignment space. Multiple dealer booths from local resellers. Great for MCM furniture, art, and statement decor pieces.</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Best For</div>
+          <div class="info-val">Furniture &amp; home decor sourcing with variety. Right next to Habitat ReStore Alexandria &mdash; do both in one trip. <strong>Closed Mondays.</strong></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Old Lucketts Store VA -->
+  <div class="card" data-location="va" data-category="vintage" data-days="0,1,2,3,4,5,6">
+    <div class="card-accent" style="background:#2c3e50;"></div>
+    <div class="card-body">
+      <div class="card-top">
+        <div>
+          <div class="store-name">The Old Lucketts Store</div>
+          <div class="store-addr">42350 Lucketts Rd, Leesburg VA 20176 &middot; (703) 779-0268</div>
+        </div>
+        <div class="drive-badge">~55 min from downtown</div>
+      </div>
+      <div class="tags">
+        <span class="tag t-blue">Destination Antiques</span>
+        <span class="tag t-gold">4.5 Google Rating</span>
+        <span class="tag t-gray">Leesburg &middot; Worth the Drive</span>
+      </div>
+      <div class="info-grid">
+        <div class="info-block">
+          <div class="info-label">Hours</div>
+          <div class="hours-grid">
+            <span class="day-n">Daily</span><span class="day-h">10am &ndash; 5pm</span>
+          </div>
+          <div class="info-val" style="margin-top:4px;font-size:10px;color:#999;">Open 7 days a week, year-round.</div>
+          <a class="dir-link" href="https://maps.google.com/?q=42350+Lucketts+Rd+Leesburg+VA" target="_blank" rel="noopener">Directions</a>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Pricing</div>
+          <div class="info-val">Fixed pricing &mdash; curated antiques and vintage at various price points. Farmhouse to cottage-inspired looks. Spring &amp; fall markets are major events.</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Known For</div>
+          <div class="info-val">A destination shop on Route 15 in Loudoun County wine country. Curated rooms of antiques, salvaged goods, and vintage home decor. Seasonal markets draw huge crowds. Multiple buildings to explore.</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Best For</div>
+          <div class="info-val">Make it a day trip &mdash; pair with nearby shops On a Whim, Rust &amp; Feathers, and The Hummingbird's Nest, all on Route 15. Worth the drive for furniture &amp; decor sourcing.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /store-grid cat4 -->
+
+<!-- ═══ CATEGORY 5: SALVAGE & BUILDING MATERIALS ═══ -->
+<div class="cat-banner c5" data-cat="salvage">
+  <hr><div class="cat-label">Salvage, Reuse &amp; Building Materials</div><hr>
+</div>
+<p class="cat-desc" data-cat="salvage">A completely different category &mdash; NOT clothing or housewares. Salvaged architectural elements, building materials, hardware, doors, windows, cabinets, tile, and fixtures from homes being renovated or demolished. Essential for DIY projects, home flipping, or sourcing unique architectural pieces. Mission-driven nonprofit reuse.</p>
+
+<div class="store-grid" data-cat="salvage">
+
+  <!-- Community Forklift MD -->
+  <div class="card" data-location="md" data-category="salvage" data-days="0,1,2,3,4,5,6">
+    <div class="card-accent" style="background:#27ae60;"></div>
+    <div class="card-body">
+      <div class="card-top">
+        <div>
+          <div class="store-name">Community Forklift</div>
+          <div class="store-addr">4671 Tanglewood Dr, Hyattsville MD 20781 &middot; (301) 985-5180</div>
+        </div>
+        <div class="drive-badge">~18 min from downtown</div>
+      </div>
+      <div class="tags">
+        <span class="tag t-green">Nonprofit &middot; 4.4 Google Rating</span>
+        <span class="tag t-blue">Building Materials Reuse</span>
+        <span class="tag t-purp">Dog Friendly</span>
+      </div>
+      <div class="info-grid">
+        <div class="info-block">
+          <div class="info-label">Hours</div>
+          <div class="hours-grid">
+            <span class="day-n">Daily</span><span class="day-h">10am &ndash; 5pm</span>
+          </div>
+          <div class="info-val" style="margin-top:4px;font-size:10px;color:#999;">Open 7 days. Closes at 5pm sharp &mdash; don't be late.</div>
+          <a class="dir-link" href="https://maps.google.com/?q=4671+Tanglewood+Dr+Hyattsville+MD" target="_blank" rel="noopener">Directions</a>
+        </div>
+        <div class="info-block">
+          <div class="info-label">What You'll Find</div>
+          <div class="info-val">Solid core doors &middot; Used cabinets &middot; Bathroom fixtures &middot; Floor/wall tile &middot; Lumber &middot; Windows &middot; Light fixtures &middot; Hardware &middot; Sinks &middot; Unique architectural pieces salvaged from older homes.</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Known For</div>
+          <div class="info-val">THE DC-area destination for salvaged building materials. Nonprofit mission &mdash; keeps materials out of landfills. Friendly, patient staff. Dog friendly! Warehouse format &mdash; come ready to dig.</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Heads Up</div>
+          <div class="info-val">Dress for the weather (warehouse = no climate control). Bring work gloves &mdash; items are stacked and you'll need to move things. Best deals on older stock. Bring a truck for big finds.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Habitat ReStore Alexandria VA -->
+  <div class="card" data-location="va" data-category="salvage" data-days="1,2,3,4,5,6">
+    <div class="card-accent" style="background:#2980b9;"></div>
+    <div class="card-body">
+      <div class="card-top">
+        <div>
+          <div class="store-name">Habitat ReStore &ndash; Alexandria</div>
+          <div class="store-addr">869 S Pickett St, Alexandria VA 22304 &middot; (703) 360-6700</div>
+        </div>
+        <div class="drive-badge">~18 min from downtown</div>
+      </div>
+      <div class="tags">
+        <span class="tag t-green">Nonprofit &middot; Habitat for Humanity</span>
+        <span class="tag t-blue">Building Materials &amp; Appliances</span>
+        <span class="tag t-gold">4.0 Google Rating</span>
+      </div>
+      <div class="info-grid">
+        <div class="info-block">
+          <div class="info-label">Hours</div>
+          <div class="hours-grid">
+            <span class="day-n">Mon&ndash;Fri</span><span class="day-h">10am &ndash; 6pm</span>
+            <span class="day-n">Sat</span><span class="day-h">9am &ndash; 5pm</span>
+            <span class="day-n">Sun</span><span class="day-x">CLOSED</span>
+          </div>
+          <div class="info-val" style="margin-top:4px;font-size:10px;color:#999;">Donation drop-off: Mon&ndash;Sat 10am&ndash;4pm</div>
+          <a class="dir-link" href="https://maps.google.com/?q=869+S+Pickett+St+Alexandria+VA" target="_blank" rel="noopener">Directions</a>
+        </div>
+        <div class="info-block">
+          <div class="info-label">What You'll Find</div>
+          <div class="info-val">Cabinets &middot; Appliances &middot; Doors &middot; Light fixtures &middot; Tile &middot; Countertops &middot; Furniture &middot; Hardware &middot; Paint. Contractor donations mean occasional high-value finds.</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Known For</div>
+          <div class="info-val">Habitat for Humanity's home improvement reuse store. Prices well below retail &mdash; great for flippers and DIY projects. Inventory changes daily. Proceeds build homes.</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Best For</div>
+          <div class="info-val">Right next to Evolution Home &mdash; do both in one trip. Go often, as the best stuff moves fast. <strong>Closed Sundays.</strong></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Habitat ReStore Chantilly VA -->
+  <div class="card" data-location="va" data-category="salvage" data-days="1,2,3,4,5,6">
+    <div class="card-accent" style="background:#27ae60;"></div>
+    <div class="card-body">
+      <div class="card-top">
+        <div>
+          <div class="store-name">Habitat ReStore &ndash; Chantilly</div>
+          <div class="store-addr">4311 Walney Rd, Chantilly VA 20151 &middot; (703) 953-3747</div>
+        </div>
+        <div class="drive-badge">~35 min from downtown</div>
+      </div>
+      <div class="tags">
+        <span class="tag t-green">Nonprofit &middot; Habitat for Humanity</span>
+        <span class="tag t-blue">Building Materials &amp; Appliances</span>
+        <span class="tag t-gold">4.2 Google Rating</span>
+      </div>
+      <div class="info-grid">
+        <div class="info-block">
+          <div class="info-label">Hours</div>
+          <div class="hours-grid">
+            <span class="day-n">Mon&ndash;Fri</span><span class="day-h">10am &ndash; 6pm</span>
+            <span class="day-n">Sat</span><span class="day-h">9am &ndash; 5pm</span>
+            <span class="day-n">Sun</span><span class="day-x">CLOSED</span>
+          </div>
+          <div class="info-val" style="margin-top:4px;font-size:10px;color:#999;">Donation drop-off: Mon&ndash;Sat 10am&ndash;4pm</div>
+          <a class="dir-link" href="https://maps.google.com/?q=4311+Walney+Rd+Chantilly+VA" target="_blank" rel="noopener">Directions</a>
+        </div>
+        <div class="info-block">
+          <div class="info-label">What You'll Find</div>
+          <div class="info-val">Same as Alexandria ReStore &mdash; cabinets, appliances, doors, fixtures, furniture, hardware, tile. Larger space with more inventory than the Alexandria location.</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Known For</div>
+          <div class="info-val">Bigger than the Alexandria store. Strong appliance and cabinet selection. Draws contractor donations from the fast-growing Loudoun/Fairfax corridor.</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Heads Up</div>
+          <div class="info-val"><strong>Closed Sundays.</strong> The Herndon ReStore has permanently closed &mdash; Alexandria and Chantilly are the two remaining NoVA locations. Bring measurements if shopping for a project.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /store-grid cat5 -->
+
+<!-- FOOTER INFO BOXES -->
+<div class="footer-grid" id="footerGrid">
+
+  <div class="footer-box" style="border-left: 5px solid #c0392b;">
+    <div class="footer-box-title" style="color:#c0392b;">DC Goodwill Color Rotation</div>
+    <p>
+      Rotation order: <strong>Blue, Yellow, Orange, Green, Red</strong>, then repeats.
+      One full color is 50% off every single day that week. Switches every <strong>Monday</strong>.<br><br>
+      Bookmark: <strong>dcgoodwill.org/shop/savings/color-of-the-week</strong><br>
+      Or join the free Rewards Club for weekly email reminders.
+    </p>
+  </div>
+
+  <div class="footer-box" style="border-left: 5px solid #8e44ad;">
+    <div class="footer-box-title" style="color:#8e44ad;">Savers / 2nd Ave / Value Village / Unique</div>
+    <p>
+      6-color rotating tag system. Free <strong>Super Savers Club</strong> gets you early sale access + weekly email with current tag color.
+      Donate items = 20% off coupon. Major holiday weekends = 50% off storewide events.<br><br>
+      <span class="warn-inline">Always call your specific store to confirm the current tag color and any discount days &mdash; it varies by location.</span>
+    </p>
+  </div>
+
+  <div class="footer-box" style="border-left: 5px solid #f1c40f;">
+    <div class="footer-box-title" style="color:#b7950b;">Quick Tips</div>
+    <p>
+      <strong>Arrive at open</strong> for best selection<br>
+      <strong>Fia's on Tuesdays</strong> = $2 treasure hunt<br>
+      <strong>GoodWood on Thursdays</strong> = fresh inventory in<br>
+      <strong>Talk to Sidney</strong> at Something Kind of New<br>
+      <strong>Miss Pixie's</strong> &mdash; follow Instagram, things move fast<br>
+      <strong>Community Forklift</strong> = bring a truck &amp; work gloves<br>
+      <strong>Old Town Alexandria</strong> = walk Current Boutique + Mint Condition + The Twig in one trip<br>
+      <strong>Falls Church triple</strong> = Unique + Goodwill + Clock Tower all within minutes<br>
+      <strong>Lucketts</strong> = make it a day trip with Route 15 antique shops<br>
+      <strong>Join all free loyalty clubs</strong> &mdash; Goodwill Rewards + Super Savers Club
+    </p>
+  </div>
+
+</div>
+
+<div class="site-footer">
+  Last updated April 2026 &middot; Drive times approximate from downtown DC &middot; Always call ahead to verify hours &amp; discounts
+</div>
+
+<script>
+(function() {
+  const TOTAL = 27;
+  const state = { location: 'all', day: 'all', category: 'all' };
+  const cards = document.querySelectorAll('.card[data-category]');
+  const catBanners = document.querySelectorAll('.cat-banner[data-cat]');
+  const catDescs = document.querySelectorAll('.cat-desc[data-cat]');
+  const noResults = document.getElementById('noResults');
+  const filterCount = document.getElementById('filterCount');
+  const clearBtn = document.getElementById('clearBtn');
+  const footerGrid = document.getElementById('footerGrid');
+
+  // Highlight today's day pill
+  const today = new Date().getDay();
+  const todayPill = document.querySelector(`[data-filter="day"][data-value="${today}"]`);
+  if (todayPill) {
+    todayPill.textContent += ' (today)';
+  }
+
+  // Handle pill clicks
+  document.querySelectorAll('.pill').forEach(pill => {
+    pill.addEventListener('click', function() {
+      const filter = this.dataset.filter;
+      const value = this.dataset.value;
+
+      // Deactivate siblings
+      this.parentElement.querySelectorAll('.pill').forEach(p => {
+        p.className = 'pill';
+      });
+
+      // Activate this pill
+      const activeClass = this.dataset.activeClass || 'active';
+      this.classList.add(activeClass);
+
+      state[filter] = value;
+      applyFilters();
+    });
+  });
+
+  function applyFilters() {
+    let visible = 0;
+    const visibleCats = new Set();
+
+    cards.forEach(card => {
+      const loc = card.dataset.location;
+      const cat = card.dataset.category;
+      const days = card.dataset.days.split(',');
+
+      const matchLoc = state.location === 'all' || loc === state.location;
+      const matchDay = state.day === 'all' || days.includes(state.day);
+      const matchCat = state.category === 'all' || cat === state.category;
+
+      if (matchLoc && matchDay && matchCat) {
+        card.classList.remove('hidden');
+        visible++;
+        visibleCats.add(cat);
+      } else {
+        card.classList.add('hidden');
+      }
+    });
+
+    // Show/hide category banners and descriptions
+    catBanners.forEach(b => {
+      b.classList.toggle('hidden', !visibleCats.has(b.dataset.cat));
+    });
+    catDescs.forEach(d => {
+      d.classList.toggle('hidden', !visibleCats.has(d.dataset.cat));
+    });
+
+    // Show/hide store-grid containers
+    document.querySelectorAll('.store-grid[data-cat]').forEach(grid => {
+      grid.style.display = visibleCats.has(grid.dataset.cat) ? '' : 'none';
+    });
+
+    // Update count
+    filterCount.innerHTML = `Showing <strong>${visible}</strong> of ${TOTAL} stores`;
+    noResults.classList.toggle('show', visible === 0);
+
+    // Show/hide footer when filters active
+    const hasFilter = state.location !== 'all' || state.day !== 'all' || state.category !== 'all';
+    clearBtn.classList.toggle('show', hasFilter);
+    footerGrid.classList.toggle('hidden', hasFilter && visible < TOTAL);
+  }
+
+  window.clearFilters = function() {
+    state.location = 'all';
+    state.day = 'all';
+    state.category = 'all';
+
+    document.querySelectorAll('.pill').forEach(p => {
+      p.className = 'pill';
+    });
+    document.querySelectorAll('[data-value="all"]').forEach(p => {
+      p.classList.add('active');
+    });
+
+    applyFilters();
+  };
+})();
+</script>
+
+</body>
+</html>
