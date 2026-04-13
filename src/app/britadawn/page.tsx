@@ -1073,6 +1073,13 @@ export default function BritaDawnPage() {
             Instagram
           </a>
           <a
+            href="https://www.youtube.com/@britagrothe4426"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            YouTube
+          </a>
+          <a
             href="https://www.facebook.com/Brita-Dawn-Coaching-556637824370248/"
             target="_blank"
             rel="noopener noreferrer"
